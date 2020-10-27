@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import ReactDOM from 'react-dom';
-import PersonForm from './PersonForm';
-import Persons from './PersonsComponent';
-import Filter from './Filter';
+import ReactDOM from 'react-dom'
+import PersonForm from './PersonForm'
+import Persons from './PersonsComponent'
+import Filter from './Filter'
 import personService, { deleteUser } from './services/personService'
-
+import './index.css'
+import Notification from './Notification'
 
 const baseUrl = 'http://localhost:3001/persons'
 
@@ -13,6 +14,8 @@ const App = () => {
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
   const [filterWord, setFilter] = useState('');
+  const [message, setMessage] = useState(null)
+
 
   useEffect(() => {
     personService
@@ -45,7 +48,6 @@ const App = () => {
     if (sameName.length == 0) {
       const personObject = {
         name: newName,
-        //id: id + 1,
         number: newNumber
       };
       personService
@@ -54,6 +56,12 @@ const App = () => {
           setPersons(persons.concat(returnedPerson))
           setNewName('');
           setNewNumber('');
+          setMessage(
+            `Added ${returnedPerson.name}`
+          )
+          setTimeout(() => {
+            setMessage(null)
+          }, 5000)
         })
     } else {
       alert(`${newName} is already added to phonebook`)
@@ -61,13 +69,16 @@ const App = () => {
     }
 
   }
-  const deleteUserr = (id) => {
-    console.log("BEFORE I will update")
-deleteUser(id)
-console.log("Now I will update")
-personService.getAll().then(response => {
-      setPersons(response)
-    })
+
+  const deleteUserr = (id, name) => {
+    const userConfirmation = window.confirm(`Delete ${name}?`)
+    if(userConfirmation) {
+      deleteUser(id)
+      personService.getAll().then(response => {
+        setPersons(response)
+      })
+    }
+   
   }
 
 
@@ -75,6 +86,7 @@ personService.getAll().then(response => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} />
       <Filter filterWord={filterWord} handleFilterChange={handleFilterChange} />
       <PersonForm
         addPerson={addPerson} newName={newName} newNumber={newNumber}

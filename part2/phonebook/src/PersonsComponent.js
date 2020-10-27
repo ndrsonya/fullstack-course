@@ -13,7 +13,7 @@ const Persons = (props) => {
                     persons.filter(p => p.name.toLowerCase().includes(filterWord.toLowerCase()))
                         .map(person =>
                             <li key={person.id}>
-                                {person.name} <button onClick={() => props.deleteUserr(person.id)}>delete</button></li>
+                                {person.name} <button onClick={() => props.deleteUserr(person.id, person.name)}>delete</button></li>
                     )
                 }
 
